@@ -37,6 +37,8 @@ class Window {
     this.el.addEventListener("mouseover", this.handleMouseOver);
     this.el.addEventListener("mousedown", this.handleMouseDown);
     this.el.addEventListener("mouseout", this.handleMouseOut);
+    this.el.addEventListener("touchstart", this.handleMouseDown);
+    this.el.addEventListener("touchend", this.handleMouseUp);
 
     this.listEl = document.createElement("div");
     this.listEl.classList.add("proseplay-list");
@@ -131,15 +133,14 @@ class Window {
     this.el.classList.add("proseplay-hover");
   }
 
-  handleMouseDown = (e: MouseEvent): boolean => {
+  handleMouseDown = (e: MouseEvent | TouchEvent): void => {
     e.preventDefault();
 
-    if (!this.isHoverable) return false;
+    if (!this.isHoverable) return;
 
     this.isHovered = true;
+    this.el.classList.add("proseplay-hover");
     this.isDragged = true;
-
-    return false;
   }
 
   handleMouseOut = (): void => {
@@ -149,7 +150,7 @@ class Window {
     this.el.classList.remove("proseplay-hover");
   }
 
-  handleMouseUp = (e: MouseEvent): boolean => {
+  handleMouseUp = (e: MouseEvent | TouchEvent): void => {
     e.preventDefault();
     
     this.snapToNearestChoice();
@@ -163,8 +164,6 @@ class Window {
         this.functions[functionName]();
       }
     }
-
-    return false;
   }
 
   setLink(linkIndex: number | null): void {

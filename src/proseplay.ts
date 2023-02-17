@@ -72,8 +72,11 @@ class ProsePlay {
 
     this.el.addEventListener("click", this.handleClick);
     this.el.addEventListener("mousedown", this.handleMouseDown);
+    this.el.addEventListener("touchstart", this.handleMouseDown);
     document.addEventListener("mousemove", this.handleMouseMove);
+    document.addEventListener("touchmove", this.handleMouseMove);
     document.addEventListener("mouseup", this.handleMouseUp);
+    document.addEventListener("touchend", this.handleMouseUp);
   }
 
   private static createInstance(): ProsePlay {
@@ -312,14 +315,8 @@ class ProsePlay {
     }
   }
 
-  private handleMouseDown = (e: MouseEvent): boolean => {
-    e.preventDefault();
-
-    if (this._isExpanded) return false;
-    
-    this.isMouseDown = true;
-    this.mouse.x = e.clientX;
-    this.mouse.y = e.clientY;
+  private handleMouseDown = (e: MouseEvent | TouchEvent): void => {
+    if (this._isExpanded) return;
 
     this.windows.forEach(window => {
       if (window.isDragged) {
@@ -327,26 +324,33 @@ class ProsePlay {
       }
     });
 
-    if (this.draggedWindow) {
-      this.windows.forEach(window => {
-        window.isHoverable = false;
-      });
+    if (!this.draggedWindow) return;
 
-      let windowsToDrag = [this.draggedWindow];
-      if (this.draggedWindow.linkIndex) {
-        windowsToDrag.push(...this.links[this.draggedWindow.linkIndex]);
-      }
-      windowsToDrag.forEach(window => window.el.classList.add("proseplay-hover"));
-    }
-
-    return false;
-  }
-
-  private handleMouseMove = (e: MouseEvent): boolean => {
+    this.isMouseDown = true;
     e.preventDefault();
 
-    if (this._isExpanded) return false;
+    this.windows.forEach(window => {
+      window.isHoverable = false;
+    });
 
+    if (e instanceof MouseEvent) {
+      this.mouse.x = e.clientX;
+      this.mouse.y = e.clientY;
+    } else {
+      this.mouse.x = e.touches[0].clientX;
+      this.mouse.y = e.touches[0].clientY;
+    }
+
+    let windowsToDrag = [this.draggedWindow];
+    if (this.draggedWindow.linkIndex) {
+      windowsToDrag.push(...this.links[this.draggedWindow.linkIndex]);
+    }
+    windowsToDrag.forEach(window => window.el.classList.add("proseplay-hover"));
+  }
+
+  private handleMouseMove = (e: MouseEvent | TouchEvent): void => {
+    if (this._isExpanded) return;
+    
     if (!this.isMouseDown) {
       let hasHover = false;
       this.windows.forEach(window => {
@@ -355,13 +359,17 @@ class ProsePlay {
         }
       });
       this.el.classList.toggle("proseplay-has-hover", hasHover);
-      return false;
+      return;
     }
-
-    if (!this.draggedWindow) return false;
+    
+    if (!this.draggedWindow) return;
+    
+    e.preventDefault();
+    
     let draggedListPos = this.draggedWindow.top;
-    draggedListPos -= (this.mouse.y - e.clientY);
-    this.mouse.y = e.clientY;
+    let y = (e instanceof MouseEvent) ? e.clientY : e.touches[0].clientY;
+    draggedListPos -= (this.mouse.y - y);
+    this.mouse.y = y;
 
     let windowsToDrag = [this.draggedWindow];
     if (this.draggedWindow.linkIndex) {
@@ -370,21 +378,19 @@ class ProsePlay {
     windowsToDrag.forEach(window => {
       window.slideTo(draggedListPos);
     });
-
-    return false;
   }
 
-  private handleMouseUp = (e: MouseEvent): boolean => {
-    if (!this.isMouseDown) return false;
+  private handleMouseUp = (e: MouseEvent | TouchEvent): void => {
+    if (!this.isMouseDown) return;
+    
+    if (this._isExpanded) return;
     
     e.preventDefault();
-
-    if (this._isExpanded) return false;
 
     this.isMouseDown = false;
     this.el.classList.remove("proseplay-has-hover");
     this.windows.forEach(window => window.isHoverable = true);
-    if (!this.draggedWindow) return false;
+    if (!this.draggedWindow) return;
 
     let windowsToDrag = [this.draggedWindow];
     if (this.draggedWindow.linkIndex) {
@@ -395,7 +401,8 @@ class ProsePlay {
     });
     
     this.draggedWindow = null;
-    return false;
+
+    return;
   }
 
   setFunction(name: string, fnc: Function): void {
