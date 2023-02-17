@@ -1,4 +1,4 @@
-# proseplay
+# ProsePlay
 
 A tool for creating interactive sliding poems.
 
