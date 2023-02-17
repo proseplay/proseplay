@@ -14,6 +14,25 @@ type TokenizedText = TokenizedLine[];
 const lineTemplate = document.createElement("div");
 lineTemplate.classList.add("proseplay-line");
 
+const samples = {
+  dickinson: `We talked with each other about each other
+Though neither of us spoke —
+We were (too engrossed with|listening to) the Second’s Races
+And the Hoofs of the Clock —
+Pausing in Front of our (Sentenced Faces|Foundering Faces)
+(Time’s Decision shook —|Time compassion Took)
+Arks of Reprieve he offered to us —
+Ararats — we took —`,
+  homophones: `in the (mist|missed) (see|sea)
+(prey|pray) in the (morning|mourning)
+for (words|worlds) that (exit|exist)
+as (seep|sleep)`,
+  hypothetically: `(hypothetically|hello)[1]
+(what if|i said)[1]
+(we fell|and held)[1]
+(in love|till death)[1]`
+};
+
 class ProsePlay {
   private el: HTMLElement;
 
@@ -65,17 +84,15 @@ class ProsePlay {
     return pp;
   }
 
-  async loadSample(name: "homophones" | "hypothetically" | "dickinson" | "carpenter"): Promise<ProsePlay> {
+  loadSample(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     this.lines = [];
     this.windows = [];
     this.links = [];
 
-    return fetch(`/samples/${name}.txt`)
-      .then(r => r.text())
-      .then(text => this.parseText(text));
+    return this.parseText(samples[name]);
   }
 
-  static async loadSample(name: "homophones" | "hypothetically" | "dickinson" | "carpenter"): Promise<ProsePlay> {
+  static loadSample(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     const pp = ProsePlay.createInstance();
     return pp.loadSample(name);
   }
