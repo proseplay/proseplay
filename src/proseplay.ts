@@ -1,4 +1,4 @@
-import "./proseplay.css";
+import "./proseplay.less";
 
 import { Window } from "./window";
 import { Choice } from "./choice";
@@ -84,20 +84,20 @@ class ProsePlay {
     return pp;
   }
 
-  loadSample(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
+  load(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     this.lines = [];
     this.windows = [];
     this.links = [];
 
-    return this.parseText(samples[name]);
+    return this.parse(samples[name]);
   }
 
-  static loadSample(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
+  static load(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     const pp = ProsePlay.createInstance();
-    return pp.loadSample(name);
+    return pp.load(name);
   }
 
-  parseText(str: string): ProsePlay {
+  parse(str: string): ProsePlay {
     this.lines = [];
     this.windows = [];
     this.links = [];
@@ -164,9 +164,9 @@ class ProsePlay {
     return this;
   }
 
-  static parseText(str: string): ProsePlay {
+  static parse(str: string): ProsePlay {
     const pp = ProsePlay.createInstance();
-    pp.parseText(str);
+    pp.parse(str);
     return pp;
   }
   
@@ -286,6 +286,10 @@ class ProsePlay {
     });
   }
 
+  isExpanded(): boolean {
+    return this._isExpanded;
+  }
+
   snapshot(): string {
     let text = "";
     this.lines.forEach(line => {
@@ -392,10 +396,6 @@ class ProsePlay {
     
     this.draggedWindow = null;
     return false;
-  }
-
-  isExpanded(): boolean {
-    return this._isExpanded;
   }
 
   setFunction(name: string, fnc: Function): void {
