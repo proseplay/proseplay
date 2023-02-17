@@ -28,15 +28,6 @@
 
 .proseplay-line {
   position: relative;
-
-  &.proseplay-comment {
-    font-style: italic;
-    color: #999;
-
-    & .proseplay-current {
-      color: #999;
-    }
-  }
 }
 
 .proseplay-link-ref {
