@@ -86,7 +86,6 @@ class ProsePlay {
     this.links = [];
 
     str = str.trim();
-    console.log(str);
     let textTokens: TokenizedText = [];
     let lines = str.split("\n");
     lines.forEach(line => {
@@ -142,7 +141,6 @@ class ProsePlay {
       }
       textTokens.push(lineTokens);
     });
-    console.log(textTokens);
   
     this.constructText(textTokens);
 
