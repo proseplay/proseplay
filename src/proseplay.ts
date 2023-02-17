@@ -29,7 +29,7 @@ class ProsePlay {
   private isMouseDown: boolean;
   private draggedWindow: Window | null;
 
-  private _isPeeking: boolean;
+  private _isExpanded: boolean;
 
   private functions: {
     [name: string]: Function
@@ -47,7 +47,7 @@ class ProsePlay {
     this.isMouseDown = false;
     this.draggedWindow = null;
 
-    this._isPeeking = false;
+    this._isExpanded = false;
 
     this.functions = {};
 
@@ -199,7 +199,7 @@ class ProsePlay {
   }
 
   generate(): void {
-    if (this._isPeeking) return;
+    if (this._isExpanded) return;
 
     let windowsDragged: Window[] = [];
     this.windows.forEach(window => {
@@ -216,9 +216,9 @@ class ProsePlay {
     });
   }
 
-  peek(): void {
-    this._isPeeking = true;
-    this.el.classList.toggle("proseplay-is-peeking", this._isPeeking);
+  expand(): void {
+    this._isExpanded = true;
+    this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
 
     const em = parseFloat(getComputedStyle(this.el).fontSize);
     
@@ -249,9 +249,9 @@ class ProsePlay {
     });
   }
 
-  hide(): void {
-    this._isPeeking = false;
-    this.el.classList.toggle("proseplay-is-peeking", this._isPeeking);
+  collapse(): void {
+    this._isExpanded = false;
+    this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
 
     this.lines.forEach(line => {
       line.el.style.removeProperty("margin-bottom");
@@ -296,7 +296,7 @@ class ProsePlay {
   private handleMouseDown = (e: MouseEvent): boolean => {
     e.preventDefault();
 
-    if (this._isPeeking) return false;
+    if (this._isExpanded) return false;
     
     this.isMouseDown = true;
     this.mouse.x = e.clientX;
@@ -326,7 +326,7 @@ class ProsePlay {
   private handleMouseMove = (e: MouseEvent): boolean => {
     e.preventDefault();
 
-    if (this._isPeeking) return false;
+    if (this._isExpanded) return false;
 
     if (!this.isMouseDown) {
       let hasHover = false;
@@ -360,7 +360,7 @@ class ProsePlay {
     
     e.preventDefault();
 
-    if (this._isPeeking) return false;
+    if (this._isExpanded) return false;
 
     this.isMouseDown = false;
     this.el.classList.remove("proseplay-has-hover");
@@ -379,8 +379,8 @@ class ProsePlay {
     return false;
   }
 
-  isPeeking(): boolean {
-    return this._isPeeking;
+  isExpanded(): boolean {
+    return this._isExpanded;
   }
 
   setFunction(name: string, fnc: Function): void {
