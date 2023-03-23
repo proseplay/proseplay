@@ -77,6 +77,8 @@ class ProsePlay {
     document.addEventListener("touchmove", this.handleMouseMove);
     document.addEventListener("mouseup", this.handleMouseUp);
     document.addEventListener("touchend", this.handleMouseUp);
+
+    window.addEventListener("resize", this.handleResize);
   }
 
   private static createInstance(): ProsePlay {
@@ -408,6 +410,10 @@ class ProsePlay {
   setFunction(name: string, fnc: Function): void {
     this.functions[name] = fnc;
     this.windows.forEach(window => window.setFunction(name, fnc));
+  }
+
+  private handleResize = (): void => {
+    this.windows.forEach(window => window.activateChoice());
   }
 }
 
