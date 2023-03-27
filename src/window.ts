@@ -131,12 +131,12 @@ class Window {
     if (!target.classList.contains("proseplay-current")) return;
 
     this.pointerOver();
-
-    (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
+    this.links.forEach(window => window.pointerOver());
   }
-
+  
   pointerOver() {
     this.el.classList.add("proseplay-hover");
+    (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
   }
 
   handlePointerDown = (e: PointerEvent): void => {

@@ -163,7 +163,10 @@ class ProsePlay {
 
       line.forEach(token => {
         if (token.strings.length === 1) {
-          lineEl.append(document.createTextNode(token.strings[0]));
+          const span = document.createElement("span");
+          span.classList.add("proseplay-plaintext");
+          span.innerText = token.strings[0];
+          lineEl.append(span);
           this.lines[this.lines.length - 1].tokens.push(token.strings[0]);
         } else {
           const window = new Window(lineEl);

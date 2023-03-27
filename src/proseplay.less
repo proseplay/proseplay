@@ -8,6 +8,10 @@
   }
 }
 
+.proseplay-plaintext {
+  transition: opacity 0.15s ease-in-out;
+}
+
 .proseplay-window {
   display: inline-block;
   box-shadow: inset .05em .05em .2em rgba(0,0,0,0.15);
@@ -19,12 +23,6 @@
   padding: 0 .2em;
   margin-bottom: -0.35em;
   touch-action: none;
-
-  &.proseplay-hover {
-    .proseplay-choice {
-      opacity: 1;
-    }
-  }
 }
 
 .proseplay-line {
@@ -34,7 +32,7 @@
 .proseplay-link-ref {
   line-height: 1;
   padding-left: 3px;
-  color: #999;
+  opacity: 0.6;
 }
 
 .proseplay-list {
@@ -52,7 +50,6 @@
 
 .proseplay-choice {
   opacity: 0;
-  color: #999;
   transition: opacity 0.15s ease-in-out;
   width: max-content;
   line-height: 1;
@@ -62,17 +59,28 @@
 
 .proseplay-current {
   opacity: 1;
-  color: #000;
   z-index: 1;
   cursor: ns-resize;
   pointer-events: unset;
 }
 
 .proseplay-has-hover {
-  color: rgba(0,0,0,0.1);
-  .proseplay-window:not(.proseplay-hover) {
-    .proseplay-current {
-      color: rgba(0,0,0,0.1);      
+  .proseplay-plaintext {
+    opacity: 0.2;
+  }
+  .proseplay-window {
+    .proseplay-choice {
+      &.proseplay-current {
+        opacity: 0.2;
+      }
+    }
+    &.proseplay-hover {
+      .proseplay-choice {
+        opacity: 0.4;
+        &.proseplay-current {
+          opacity: 1;
+        }
+      }
     }
   }
 }
