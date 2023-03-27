@@ -13,20 +13,17 @@
 }
 
 .proseplay-window {
+  box-sizing: content-box;
   display: inline-block;
   box-shadow: inset .05em .05em .2em rgba(0,0,0,0.15);
   border-radius: .2em;
   position: relative;
   transition: width 0.15s ease-in-out;
-  user-select: none;
-  height: 1.3em;
-  padding: 0 .2em;
+  height: 1.5em;
+  padding-right: 0.3em;
+  padding-left: 0.3em;
   margin-bottom: -0.35em;
   touch-action: none;
-}
-
-.proseplay-line {
-  position: relative;
 }
 
 .proseplay-link-ref {
@@ -37,12 +34,6 @@
 
 .proseplay-list {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  top: 0;
-  left: .2em;
-  height: 100%;
-
   &.proseplay-has-transition {
     transition: top 0.15s ease-in-out, left 0.15s ease-in-out;
   }
@@ -52,20 +43,19 @@
   opacity: 0;
   transition: opacity 0.15s ease-in-out;
   width: max-content;
-  line-height: 1;
-  padding-top: 0.25em;
   pointer-events: none;
+  margin-bottom: -0.25em;
 }
 
 .proseplay-current {
   opacity: 1;
-  z-index: 1;
   cursor: ns-resize;
-  pointer-events: unset;
+  pointer-events: all;
 }
 
 .proseplay-has-hover {
-  .proseplay-plaintext {
+  .proseplay-plaintext,
+  .proseplay-link-ref {
     opacity: 0.2;
   }
   .proseplay-window {
