@@ -40,44 +40,19 @@ class ProsePlay {
     el: HTMLElement,
     tokens: (string | Window)[],
     windows: Window[]
-  }[];
-  private windows: Window[];
-  private links: Window[][];
+  }[] = [];
+  private windows: Window[] = [];
+  private links: Window[][] = [];
 
-  private mouse: {x: number, y: number};
-  private isMouseDown: boolean;
-  private draggedWindow: Window | null;
-
-  private _isExpanded: boolean;
+  private _isExpanded: boolean = false;
 
   private functions: {
     [name: string]: Function
-  };
+  } = {};
 
   constructor(el: HTMLElement) {
     this.el = el;
     this.el.classList.add("proseplay");
-
-    this.lines = [];
-    this.windows = [];
-    this.links = [];
-    
-    this.mouse = {x: 0, y: 0};
-    this.isMouseDown = false;
-    this.draggedWindow = null;
-
-    this._isExpanded = false;
-
-    this.functions = {};
-
-    this.el.addEventListener("click", this.handleClick);
-    this.el.addEventListener("mousedown", this.handleMouseDown);
-    this.el.addEventListener("touchstart", this.handleMouseDown);
-    document.addEventListener("mousemove", this.handleMouseMove);
-    document.addEventListener("touchmove", this.handleMouseMove);
-    document.addEventListener("mouseup", this.handleMouseUp);
-    document.addEventListener("touchend", this.handleMouseUp);
-
     window.addEventListener("resize", this.handleResize);
   }
 
@@ -193,7 +168,6 @@ class ProsePlay {
         } else {
           const window = new Window(lineEl);
           if (token.linkIndex) {
-            window.setLink(token.linkIndex);
             if (!this.links[token.linkIndex]) {
               this.links[token.linkIndex] = [];
             }
@@ -215,6 +189,13 @@ class ProsePlay {
       if (line.length === 0) {
         lineEl.innerHTML = "&nbsp;";
       }
+    });
+
+    this.links.forEach((windows, i) => {
+      windows.forEach(window => {
+        const otherWindows = windows.filter(otherWindow => otherWindow !== window);
+        window.setLink(i, otherWindows);
+      });
     });
   }
 
@@ -309,102 +290,6 @@ class ProsePlay {
     });
 
     return text;
-  }
-
-  private handleClick = (e: MouseEvent): void => {
-    if (this.draggedWindow) {
-      e.preventDefault();
-    }
-  }
-
-  private handleMouseDown = (e: MouseEvent | TouchEvent): void => {
-    if (this._isExpanded) return;
-
-    this.windows.forEach(window => {
-      if (window.isDragged) {
-        this.draggedWindow = window;
-      }
-    });
-
-    if (!this.draggedWindow) return;
-
-    this.isMouseDown = true;
-    e.preventDefault();
-
-    this.windows.forEach(window => {
-      window.isHoverable = false;
-    });
-
-    if (e instanceof MouseEvent) {
-      this.mouse.x = e.clientX;
-      this.mouse.y = e.clientY;
-    } else {
-      this.mouse.x = e.touches[0].clientX;
-      this.mouse.y = e.touches[0].clientY;
-    }
-
-    let windowsToDrag = [this.draggedWindow];
-    if (this.draggedWindow.linkIndex) {
-      windowsToDrag.push(...this.links[this.draggedWindow.linkIndex]);
-    }
-    windowsToDrag.forEach(window => window.el.classList.add("proseplay-hover"));
-  }
-
-  private handleMouseMove = (e: MouseEvent | TouchEvent): void => {
-    if (this._isExpanded) return;
-    
-    if (!this.isMouseDown) {
-      let hasHover = false;
-      this.windows.forEach(window => {
-        if (window.isHovered) {
-          hasHover = true;
-        }
-      });
-      this.el.classList.toggle("proseplay-has-hover", hasHover);
-      return;
-    }
-    
-    if (!this.draggedWindow) return;
-    
-    e.preventDefault();
-    
-    let draggedListPos = this.draggedWindow.top;
-    let y = (e instanceof MouseEvent) ? e.clientY : e.touches[0].clientY;
-    draggedListPos -= (this.mouse.y - y);
-    this.mouse.y = y;
-
-    let windowsToDrag = [this.draggedWindow];
-    if (this.draggedWindow.linkIndex) {
-      windowsToDrag.push(...this.links[this.draggedWindow.linkIndex]);
-    }
-    windowsToDrag.forEach(window => {
-      window.slideTo(draggedListPos);
-    });
-  }
-
-  private handleMouseUp = (e: MouseEvent | TouchEvent): void => {
-    if (!this.isMouseDown) return;
-    
-    if (this._isExpanded) return;
-    
-    e.preventDefault();
-
-    this.isMouseDown = false;
-    this.el.classList.remove("proseplay-has-hover");
-    this.windows.forEach(window => window.isHoverable = true);
-    if (!this.draggedWindow) return;
-
-    let windowsToDrag = [this.draggedWindow];
-    if (this.draggedWindow.linkIndex) {
-      windowsToDrag.push(...this.links[this.draggedWindow.linkIndex]);
-    }
-    windowsToDrag.forEach(window => {
-      window.handleMouseUp(e);
-    });
-    
-    this.draggedWindow = null;
-
-    return;
   }
 
   setFunction(name: string, fnc: Function): void {

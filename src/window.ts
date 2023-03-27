@@ -1,6 +1,17 @@
 import { Choice } from "./choice";
 
+const windowTemplate = document.createElement("div");
+windowTemplate.classList.add("proseplay-window");
+const listTemplate = document.createElement("div");
+listTemplate.classList.add("proseplay-list");
+windowTemplate.append(listTemplate);
+
+const linkRefTemplate = document.createElement("sup");
+linkRefTemplate.classList.add("proseplay-link-ref");
+
 const TRANSITION_TIME = 15;
+
+const mouse = { x: 0, y: 0 };
 
 class Window {
   static template: HTMLElement;
@@ -17,32 +28,24 @@ class Window {
   isDragged: boolean;
 
   linkIndex: number | null;
+  links: Window[] = [];
 
   functionNames: string[];
   functions: {
     [name: string]: Function
   };
 
-  static {
-    Window.template = document.createElement("div");
-    Window.template.classList.add("proseplay-window");
-
-    Window.linkRefTemplate = document.createElement("sup");
-    Window.linkRefTemplate.classList.add("proseplay-link-ref");
-  }
-
   constructor(parent: HTMLElement) {
-    this.el = Window.template.cloneNode(true) as HTMLElement;
+    this.el = windowTemplate.cloneNode(true) as HTMLElement;
     parent.appendChild(this.el);
-    this.el.addEventListener("mouseover", this.handleMouseOver);
-    this.el.addEventListener("mousedown", this.handleMouseDown);
-    this.el.addEventListener("mouseout", this.handleMouseOut);
-    this.el.addEventListener("touchstart", this.handleMouseDown);
-    this.el.addEventListener("touchend", this.handleMouseUp);
 
-    this.listEl = document.createElement("div");
-    this.listEl.classList.add("proseplay-list");
-    this.el.append(this.listEl);
+    this.el.addEventListener("pointerover", this.handlePointerOver);
+    this.el.addEventListener("pointerdown", this.handlePointerDown);
+    this.el.addEventListener("pointermove", this.handlePointerMove);
+    this.el.addEventListener("pointerup", this.handlePointerUp);
+    this.el.addEventListener("pointerout", this.handlePointerOut);
+
+    this.listEl = this.el.querySelector(".proseplay-list") as HTMLElement;
 
     this.choices = [];
     this.currentChoiceIndex = 0;
@@ -123,36 +126,77 @@ class Window {
     return parseInt(getComputedStyle(this.listEl).getPropertyValue("top").replace("px", ""));
   }
 
-  handleMouseOver = (e: MouseEvent): void => {
+  handlePointerOver = (e: PointerEvent): void => {
     if (!this.isHoverable) return;
 
     const target = e.target as HTMLElement;
     if (!target.classList.contains("proseplay-current")) return;
 
+    this.pointerOver();
+    this.links.forEach(window => window.pointerOver());
+
+    (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
+  }
+
+  pointerOver() {
     this.isHovered = true;
     this.el.classList.add("proseplay-hover");
   }
 
-  handleMouseDown = (e: MouseEvent | TouchEvent): void => {
+  handlePointerDown = (e: PointerEvent): void => {
     e.preventDefault();
 
     if (!this.isHoverable) return;
 
+    this.el.setPointerCapture(e.pointerId);
+
     this.isHovered = true;
-    this.el.classList.add("proseplay-hover");
+    this.links.forEach(window => window.pointerDown());
     this.isDragged = true;
+
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
   }
 
-  handleMouseOut = (): void => {
+  pointerDown() {
+    this.el.classList.add("proseplay-hover");
+  }
+
+  handlePointerMove = (e: PointerEvent): void => {
+    e.preventDefault();
+
+    if (!this.isDragged) return;
+
+    const dist = mouse.y - e.clientY;
+    this.slideTo(this.top - dist);
+    this.links.forEach(window => {
+      window.slideTo(this.top - dist);
+    });
+    mouse.y = e.clientY;
+  }
+
+  handlePointerOut = (): void => {
     if (this.isDragged) return;
+    this.pointerOut();
+    this.links.forEach(window => window.pointerOut());
+
+    (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
+  }
+
+  pointerOut() {
     this.isHovered = false;
     this.isDragged = false;
     this.el.classList.remove("proseplay-hover");
   }
 
-  handleMouseUp = (e: MouseEvent | TouchEvent): void => {
+  handlePointerUp = (e: PointerEvent): void => {
     e.preventDefault();
-    
+
+    this.pointerUp();
+    this.links.forEach(window => window.pointerUp());
+  }
+
+  pointerUp(): void {
     this.snapToNearestChoice();
     this.isHovered = false;
     this.isDragged = false;
@@ -164,15 +208,18 @@ class Window {
         this.functions[functionName]();
       }
     }
+
+    (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
   }
 
-  setLink(linkIndex: number | null): void {
+  setLink(linkIndex: number | null, otherWindows: Window[]): void {
     this.linkIndex = linkIndex;
     if (linkIndex) {
-      const sup = Window.linkRefTemplate.cloneNode(true) as HTMLElement;
+      const sup = linkRefTemplate.cloneNode(true) as HTMLElement;
       this.el.insertAdjacentElement("afterend", sup);
       sup.innerText = `${linkIndex}`;
     }
+    this.links = otherWindows;
   }
 
   setFunctionNames(functionNames: string[]): void {
