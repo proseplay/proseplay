@@ -24,7 +24,6 @@ class Window {
   currentChoiceIndex: number;
 
   isHoverable: boolean;
-  isHovered: boolean;
   isDragged: boolean;
 
   linkIndex: number | null;
@@ -51,7 +50,6 @@ class Window {
     this.currentChoiceIndex = 0;
 
     this.isHoverable = true;
-    this.isHovered = false;
     this.isDragged = false;
 
     this.linkIndex = null;
@@ -133,13 +131,11 @@ class Window {
     if (!target.classList.contains("proseplay-current")) return;
 
     this.pointerOver();
-    this.links.forEach(window => window.pointerOver());
 
     (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
   }
 
   pointerOver() {
-    this.isHovered = true;
     this.el.classList.add("proseplay-hover");
   }
 
@@ -150,7 +146,6 @@ class Window {
 
     this.el.setPointerCapture(e.pointerId);
 
-    this.isHovered = true;
     this.links.forEach(window => window.pointerDown());
     this.isDragged = true;
 
@@ -184,7 +179,6 @@ class Window {
   }
 
   pointerOut() {
-    this.isHovered = false;
     this.isDragged = false;
     this.el.classList.remove("proseplay-hover");
   }
@@ -198,7 +192,6 @@ class Window {
 
   pointerUp(): void {
     this.snapToNearestChoice();
-    this.isHovered = false;
     this.isDragged = false;
     this.el.classList.remove("proseplay-hover");
 

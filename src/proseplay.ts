@@ -244,6 +244,7 @@ class ProsePlay {
         });
         window.el.style.width = `${maxWidth}px`;
 
+        window.isHoverable = false;
       });
 
       line.el.style.marginBottom = `${marginBottom}px`;
@@ -266,6 +267,8 @@ class ProsePlay {
           choice.el.style.removeProperty("opacity");
         });
         window.listEl.style.removeProperty("width");
+
+        window.isHoverable = true;
 
         window.activateChoice();
       });
