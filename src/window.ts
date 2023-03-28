@@ -15,9 +15,6 @@ let PADDING: number;
 const mouse = { x: 0, y: 0 };
 
 class Window {
-  static template: HTMLElement;
-  static linkRefTemplate: HTMLElement;
-
   el: HTMLElement;
   listEl: HTMLElement;
 
@@ -25,10 +22,10 @@ class Window {
   currentIndex: number;
 
   isHoverable: boolean;
-  isDragged: boolean;
+  private isDragged: boolean;
 
   linkIndex: number | null;
-  links: Window[] = [];
+  private links: Window[] = [];
 
   functionNames: string[];
   functions: {
@@ -63,16 +60,27 @@ class Window {
     PADDING = parseInt(getComputedStyle(parent).fontSize) * 0.3;
   }
 
+  /**
+   * Change the direction of the window to horizontal, i.e. east–west.
+   */
   setHorizontal(): void {
     this.horizontal = true;
     this.el.classList.add("proseplay-horizontal");
   }
 
+  /**
+   * Add a choice to the window.
+   * @param choice The choice object to be added.
+   */
   addChoice(choice: Choice): void {
     this.choices.push(choice);
     this.listEl.appendChild(choice.el);
   }
 
+  /**
+   * Activate the specified choice and adjusts position and sizing accordingly.
+   * @param choice The choice to be activated. If none is given, it readjusts to the current choice — this can be useful for resizing.
+   */
   activateChoice(choice?: Choice): void {
     if (!choice) {
       choice = this.choices[this.currentIndex];
@@ -88,6 +96,11 @@ class Window {
     this.el.style.width = `${choice.offsetWidth}px`;
   }
 
+  /**
+   * Slide to a random choice.
+   * @param choiceIndex Optional parameter, if a specific choice index is needed.
+   * @returns The chosen index of choices.
+   */
   random(choiceIndex?: number): number {
     if (choiceIndex === undefined) {
       choiceIndex = Math.floor(Math.random() * this.choices.length);
@@ -126,7 +139,11 @@ class Window {
     this.activateChoice(targetChoice);
   }
 
-  slideToChoice(choiceIndex: number): void {
+  /**
+   * Slide to a specified index in the window's array of choices.
+   * @param choiceIndex Index of choice to slide to.
+   */
+  slideToChoice(choiceIndex: number) {
     if (choiceIndex > this.choices.length - 1) return;
     const choice = this.choices[choiceIndex];
 
@@ -172,6 +189,9 @@ class Window {
     }
   }
 
+  /**
+   * Returns either the `left` or `top` of the window's list element, depending on the direction of the window.
+   */
   get pos(): number {
     const property = this.horizontal ? "left" : "top";
     return parseInt(getComputedStyle(this.listEl).getPropertyValue(property).replace("px", ""));
@@ -263,6 +283,11 @@ class Window {
     (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
   }
 
+  /**
+   * Set link between this window and other windows.
+   * @param linkIndex Index number of link, as indicated in square brackets.
+   * @param otherWindows Array of other windows in the same link.
+   */
   setLink(linkIndex: number | null, otherWindows: Window[]): void {
     this.linkIndex = linkIndex;
     if (linkIndex) {
@@ -273,10 +298,19 @@ class Window {
     this.links = otherWindows;
   }
 
+  /**
+   * Set function names.
+   * @param functionNames Array of function names.
+   */
   setFunctionNames(functionNames: string[]): void {
     this.functionNames = functionNames;
   }
 
+  /**
+   * Assign functions to function names.
+   * @param name Name of function.
+   * @param fnc Function to be called.
+   */
   setFunction(name: string, fnc: Function): void {
     this.functions[name] = fnc;
   }
