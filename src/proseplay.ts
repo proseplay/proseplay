@@ -69,6 +69,11 @@ class ProsePlay {
     return pp;
   }
 
+  /**
+   * Load a sample.
+   * @param name The name of the sample to load.
+   * @returns The ProsePlay instance with the parsed text.
+   */
   load(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     this.lines = [];
     this.windows = [];
@@ -77,11 +82,21 @@ class ProsePlay {
     return this.parse(samples[name]);
   }
 
+  /**
+   * Create a ProsePlay instance and load a sample.
+   * @param name The name of the sample to load.
+   * @returns A ProsePlay instance with the parsed text.
+   */
   static load(name: "homophones" | "hypothetically" | "dickinson"): ProsePlay {
     const pp = ProsePlay.createInstance();
     return pp.load(name);
   }
 
+  /**
+   * Parse the given string.
+   * @param str The formatted string to parse.
+   * @returns The ProsePlay instance with the parsed text.
+   */
   parse(str: string): ProsePlay {
     this.lines = [];
     this.windows = [];
@@ -153,6 +168,11 @@ class ProsePlay {
     return this;
   }
 
+  /**
+   * Create a new ProsePlay instance and parse the given string.
+   * @param str The formatted string to parse.
+   * @returns A ProsePlay instance with the parsed text.
+   */
   static parse(str: string): ProsePlay {
     const pp = ProsePlay.createInstance();
     pp.parse(str);
@@ -214,6 +234,9 @@ class ProsePlay {
     });
   }
 
+  /**
+   * Slide each window to a random choice. If windows are linked, they will move to the same choice index together.
+   */
   generate(): void {
     if (this._isExpanded) return;
 
@@ -232,6 +255,9 @@ class ProsePlay {
     });
   }
 
+  /**
+   * Expand all windows to show all choices at once. When this is enabled, all other interactions are disabled until `collapse()` is called.
+   */
   expand(): void {
     this._isExpanded = true;
     this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
@@ -273,6 +299,9 @@ class ProsePlay {
     });
   }
 
+  /**
+   * Collapse all windows.
+   */
   collapse(): void {
     this._isExpanded = false;
     this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
@@ -297,10 +326,18 @@ class ProsePlay {
     });
   }
 
+  /**
+   * Check if windows are expanded or collapsed.
+   * @returns A boolean representing whether windows are expanded (true) or collapsed (false).
+   */
   isExpanded(): boolean {
     return this._isExpanded;
   }
 
+  /**
+   * Return the current text.
+   * @returns A string of the current text.
+   */
   snapshot(): string {
     let text = "";
     this.lines.forEach(line => {
@@ -317,6 +354,11 @@ class ProsePlay {
     return text;
   }
 
+  /**
+   * Set function to be called when certain choices are selected.
+   * @param name Name of function.
+   * @param fnc Function to be called.
+   */
   setFunction(name: string, fnc: Function): void {
     this.functions[name] = fnc;
     this.windows.forEach(window => window.setFunction(name, fnc));
@@ -326,16 +368,27 @@ class ProsePlay {
     this.windows.forEach(window => window.activateChoice());
   }
 
+  /**
+   * Return a nested list of choices in each window.
+   */
   get choices(): string[][] {
     return this.windows.map(window => {
       return window.choices.map(choice => choice.text);
     });
   }
 
+  /**
+   * Return a list of indexes to which each window is currently set.
+   */
   get currentIndexes(): number[] {
     return this.windows.map(window => window.currentIndex);
   }
 
+  /**
+   * Slide a specified window to a specified choice.
+   * @param windowIndex The index of the window to slide.
+   * @param choiceIndex The index of the choice to slide to.
+   */
   slideWindow(windowIndex: number, choiceIndex: number): void {
     if (windowIndex > this.windows.length - 1) return;
     const window = this.windows[windowIndex];

@@ -190,7 +190,7 @@ class Window {
   }
 
   /**
-   * Returns either the `left` or `top` of the window's list element, depending on the direction of the window.
+   * Return either the `left` or `top` of the window's list element, depending on the direction of the window.
    */
   get pos(): number {
     const property = this.horizontal ? "left" : "top";
