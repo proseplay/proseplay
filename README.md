@@ -1,6 +1,6 @@
 # ProsePlay
 
-A tool for creating interactive sliding poems.
+A tool for creating interactive sliding poems. (In early development — things will probably be breaking!)
 
 ## Usage
 
