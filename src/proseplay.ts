@@ -42,7 +42,7 @@ class ProsePlay {
     tokens: (string | Window)[],
     windows: Window[]
   }[] = [];
-  private windows: Window[] = [];
+  windows: Window[] = [];
   private links: Window[][] = [];
 
   private _isExpanded: boolean = false;
@@ -96,7 +96,7 @@ class ProsePlay {
             "([^(|)]+\\|?)+" + // one or more strings, with optional pipe
           ")" + // end capturing group
         "\\)" + // close parentheses
-        "(\\[(\\d)+(-)?\\])?" // link index
+        "(\\[(\\d)*(-)?\\])?" // link index
         , "g"));
       const stringsIndex = 1,
         linkIndex = 4,
