@@ -44,7 +44,7 @@ class ProsePlay {
     tokens: (string | Window)[],
     windows: Window[]
   }[] = [];
-  windows: Window[] = [];
+  private windows: Window[] = [];
   private links: Window[][] = [];
 
   private _isExpanded: boolean = false;
@@ -245,7 +245,7 @@ class ProsePlay {
         let height = window.el.scrollHeight - window.listEl.offsetTop;
         window.el.style.height = `${height}px`;
         
-        let y = window.el.scrollHeight - (window.currentChoiceIndex + 1) * 1.25 * em - 0.06 * em;
+        let y = window.el.scrollHeight - (window.currentIndex + 1) * 1.25 * em - 0.06 * em;
         window.el.style.top = `${y}px`;
         window.el.style.marginTop = `${-y}px`;
         marginBottom = Math.max(marginBottom, y);
@@ -306,7 +306,7 @@ class ProsePlay {
     this.lines.forEach(line => {
       line.tokens.forEach(token => {
         if (token instanceof Window) {
-          text += token.choices[token.currentChoiceIndex].text;
+          text += token.choices[token.currentIndex].text;
         } else {
           text += token;
         }
@@ -324,6 +324,23 @@ class ProsePlay {
 
   private handleResize = (): void => {
     this.windows.forEach(window => window.activateChoice());
+  }
+
+  get choices(): string[][] {
+    return this.windows.map(window => {
+      return window.choices.map(choice => choice.text);
+    });
+  }
+
+  get currentIndexes(): number[] {
+    return this.windows.map(window => window.currentIndex);
+  }
+
+  slideWindow(windowIndex: number, choiceIndex: number): void {
+    if (windowIndex > this.windows.length - 1) return;
+    const window = this.windows[windowIndex];
+    if (choiceIndex > window.choices.length - 1) return;
+    window.slideToChoice(choiceIndex);
   }
 }
 

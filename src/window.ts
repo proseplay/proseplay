@@ -9,7 +9,7 @@ windowTemplate.append(listTemplate);
 const linkRefTemplate = document.createElement("sup");
 linkRefTemplate.classList.add("proseplay-link-ref");
 
-const TRANSITION_TIME = 15;
+const BUFFER_TIME = 500;
 let PADDING: number;
 
 const mouse = { x: 0, y: 0 };
@@ -22,7 +22,7 @@ class Window {
   listEl: HTMLElement;
 
   choices: Choice[];
-  currentChoiceIndex: number;
+  currentIndex: number;
 
   isHoverable: boolean;
   isDragged: boolean;
@@ -50,7 +50,7 @@ class Window {
     this.listEl = this.el.querySelector(".proseplay-list") as HTMLElement;
 
     this.choices = [];
-    this.currentChoiceIndex = 0;
+    this.currentIndex = 0;
 
     this.isHoverable = true;
     this.isDragged = false;
@@ -75,14 +75,14 @@ class Window {
 
   activateChoice(choice?: Choice): void {
     if (!choice) {
-      choice = this.choices[this.currentChoiceIndex];
+      choice = this.choices[this.currentIndex];
       if (!this.horizontal) {
         this.listEl.style.top = `-${choice.offsetTop}px`;
       } else {
         this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
       }
     }
-    this.currentChoiceIndex = this.choices.indexOf(choice);
+    this.currentIndex = this.choices.indexOf(choice);
     this.choices.forEach(otherChoice => otherChoice.deactivate());
     choice.activate();
     this.el.style.width = `${choice.el.offsetWidth}px`;
@@ -98,18 +98,22 @@ class Window {
     const choice = this.choices[choiceIndex];
     this.activateChoice(choice);
 
+    this.pointerDown();
     this.listEl.classList.add("proseplay-has-transition");
-    setTimeout(() => this.listEl.classList.remove("proseplay-has-transition"), TRANSITION_TIME);
-    if (!this.horizontal) {
-      this.listEl.style.top = `-${choice.offsetTop}px`;
-    } else {
-      this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
-    }
+    setTimeout(() => this.listEl.classList.remove("proseplay-has-transition"), BUFFER_TIME);
+    setTimeout(() => {
+      if (!this.horizontal) {
+        this.listEl.style.top = `-${choice.offsetTop}px`;
+      } else {
+        this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
+      }
+    }, 15);
+    this.pointerUp();
 
     return choiceIndex;
   }
 
-  slideTo(pos: number): void {
+  private slideToPos(pos: number): void {
     if (!this.horizontal) {
       this.listEl.style.top = `${pos}px`;
     } else {
@@ -120,6 +124,29 @@ class Window {
     if (!targetChoice) return;
 
     this.activateChoice(targetChoice);
+  }
+
+  slideToChoice(choiceIndex: number): void {
+    if (choiceIndex > this.choices.length - 1) return;
+    const choice = this.choices[choiceIndex];
+
+    this.pointerOver();
+    this.pointerDown();
+    this.listEl.classList.add("proseplay-has-transition");
+    setTimeout(() => this.listEl.classList.remove("proseplay-has-transition"), BUFFER_TIME);
+
+    setTimeout(() => {
+      if (!this.horizontal) {
+        this.listEl.style.top = `-${choice.offsetTop}px`;
+      } else {
+        this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
+      }
+    }, 15);
+
+    this.pointerUp();
+    this.pointerOut();
+
+    this.activateChoice(choice);
   }
 
   private getNearestChoice(pos: number): Choice | null {
@@ -145,21 +172,12 @@ class Window {
     }
   }
 
-  get top(): number {
-    return parseInt(getComputedStyle(this.listEl).getPropertyValue("top").replace("px", ""));
-  }
-  get left(): number {
-    return parseInt(getComputedStyle(this.listEl).getPropertyValue("left").replace("px", ""));
-  }
   get pos(): number {
-    if (!this.horizontal) {
-      return parseInt(getComputedStyle(this.listEl).getPropertyValue("top").replace("px", ""));
-    } else {
-      return parseInt(getComputedStyle(this.listEl).getPropertyValue("left").replace("px", ""));
-    }
+    const property = this.horizontal ? "left" : "top";
+    return parseInt(getComputedStyle(this.listEl).getPropertyValue(property).replace("px", ""));
   }
 
-  handlePointerOver = (e: PointerEvent): void => {
+  private handlePointerOver = (e: PointerEvent): void => {
     e.preventDefault();
 
     if (!this.isHoverable) return;
@@ -176,7 +194,7 @@ class Window {
     (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
   }
 
-  handlePointerDown = (e: PointerEvent): void => {
+  private handlePointerDown = (e: PointerEvent): void => {
     e.preventDefault();
 
     if (!this.isHoverable) return;
@@ -197,21 +215,21 @@ class Window {
     this.el.classList.add("proseplay-hover");
   }
 
-  handlePointerMove = (e: PointerEvent): void => {
+  private handlePointerMove = (e: PointerEvent): void => {
     e.preventDefault();
 
     if (!this.isDragged) return;
 
     const dist = !this.horizontal ? mouse.y - e.clientY : mouse.x - e.clientX;
-    this.slideTo(this.pos - dist);
+    this.slideToPos(this.pos - dist);
     this.links.forEach(window => {
-      window.slideTo(this.pos - dist);
+      window.slideToPos(this.pos - dist);
     });
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   }
 
-  handlePointerOut = (): void => {
+  private handlePointerOut = (): void => {
     if (this.isDragged) return;
     this.pointerOut();
     this.links.forEach(window => window.pointerOut());
@@ -223,7 +241,7 @@ class Window {
     (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
   }
 
-  handlePointerUp = (e: PointerEvent): void => {
+  private handlePointerUp = (e: PointerEvent): void => {
     e.preventDefault();
 
     this.pointerUp();
@@ -235,7 +253,7 @@ class Window {
     this.isDragged = false;
     this.el.classList.remove("proseplay-hover");
 
-    let functionName = this.functionNames[this.currentChoiceIndex];
+    let functionName = this.functionNames[this.currentIndex];
     if (functionName) {
       if (this.functions[functionName]) {
         this.functions[functionName]();
