@@ -17,24 +17,39 @@ class Choice {
     }
   }
 
+  /**
+   * Activate this choice.
+   */
   activate() {
     this.isCurrent = true;
     this.el.classList.add("proseplay-current");
   }
   
+  /**
+   * Deactivate this choice.
+   */
   deactivate() {
     this.isCurrent = false;
     this.el.classList.remove("proseplay-current");
   }
 
+  /**
+   * Get the `offsetTop` of this element.
+   */
   get offsetTop(): number {
     return this.el.offsetTop;
   }
 
+  /**
+   * Get the `offsetLeft` of this element.
+   */
   get offsetLeft(): number {
     return this.el.offsetLeft;
   }
 
+  /**
+   * Get the `offsetWidth` of this element.
+   */
   get offsetWidth(): number {
     return this.el.offsetWidth;
   }
