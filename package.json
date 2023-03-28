@@ -1,7 +1,7 @@
 {
   "name": "proseplay",
   "desription": "A tool for creating interactive sliding poems.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "source": "src/proseplay.ts",
   "main": "dist/proseplay.js",
