@@ -6,6 +6,7 @@ import { Choice } from "./choice";
 type Token = {
   strings: string[]
   linkIndex?: number | null,
+  horizontal?: boolean,
   functionNames?: string[]
 };
 type TokenizedLine = Token[];
@@ -27,10 +28,10 @@ Ararats — we took —`,
 (prey|pray) in the (morning|mourning)
 for (words|worlds) that (exit|exist)
 as (seep|sleep)`,
-  hypothetically: `(hypothetically|hello)[1]
-(what if|i said)[1]
-(we fell|and held)[1]
-(in love|till death)[1]`
+  hypothetically: `(hypothetically|hello)[1-]
+(what if|i said)[1-]
+(we fell|and held)[1-]
+(in love|till death)[1-]`
 };
 
 class ProsePlay {
@@ -95,10 +96,11 @@ class ProsePlay {
             "([^(|)]+\\|?)+" + // one or more strings, with optional pipe
           ")" + // end capturing group
         "\\)" + // close parentheses
-        "(\\[(\\d)+\\])?" // link index
+        "(\\[(\\d)+(-)?\\])?" // link index
         , "g"));
       const stringsIndex = 1,
-        linkIndex = 4;
+        linkIndex = 4,
+        orientationIndex = 5;
 
       let currIndex = 0;
       for (const match of m) {
@@ -126,6 +128,9 @@ class ProsePlay {
           });
           if (match[linkIndex]) {
             currentToken.linkIndex = parseInt(match[linkIndex]);
+          }
+          if (match[orientationIndex] && (match[orientationIndex] === "|" || match[orientationIndex] === "-")) {
+            currentToken.horizontal = match[orientationIndex] === "-";
           }
         }
         lineTokens.push(prevToken);
@@ -181,6 +186,9 @@ class ProsePlay {
           }
           for (const name in this.functions) {
             window.setFunction(name, this.functions[name]);
+          }
+          if (token.horizontal) {
+            window.setHorizontal();
           }
           this.lines[this.lines.length - 1].tokens.push(window);
           this.lines[this.lines.length - 1].windows.push(window);

@@ -34,6 +34,10 @@ class Choice {
   get offsetTop(): number {
     return this.el.offsetTop;
   }
+
+  get offsetLeft(): number {
+    return this.el.offsetLeft;
+  }
 }
 
 export { Choice }

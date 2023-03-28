@@ -24,6 +24,17 @@
   padding-left: 0.3em;
   margin-bottom: -0.35em;
   touch-action: none;
+  user-select: none;
+
+  &.proseplay-horizontal {
+    .proseplay-list {
+      flex-direction: row;
+      gap: 1em;
+    }
+    .proseplay-current {
+      cursor: ew-resize;
+    }
+  }
 }
 
 .proseplay-link-ref {
@@ -34,6 +45,9 @@
 
 .proseplay-list {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  
   &.proseplay-has-transition {
     transition: top 0.15s ease-in-out, left 0.15s ease-in-out;
   }
@@ -44,7 +58,9 @@
   transition: opacity 0.15s ease-in-out;
   width: max-content;
   pointer-events: none;
+  user-select: none;
   margin-bottom: -0.25em;
+  // line-height: 1;
 }
 
 .proseplay-current {
