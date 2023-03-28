@@ -1,19 +1,15 @@
-class Choice {
-  static template: HTMLElement;
-  el: HTMLElement;
-  text: string;
-  isCurrent: boolean;
+const choiceTemplate = document.createElement("div");
+choiceTemplate.classList.add("proseplay-choice");
 
-  static {
-    Choice.template = document.createElement("div");
-    Choice.template.classList.add("proseplay-choice");
-  }
+class Choice {
+  el: HTMLElement;
+  text: string = "";
+  isCurrent: boolean = false;
 
   constructor(text: string) {
     this.text = text;
-    this.isCurrent = false;
 
-    this.el = Choice.template.cloneNode(true) as HTMLElement;
+    this.el = choiceTemplate.cloneNode(true) as HTMLElement;
     if (text !== " ") {
       this.el.innerText = text;
     } else {
@@ -37,6 +33,10 @@ class Choice {
 
   get offsetLeft(): number {
     return this.el.offsetLeft;
+  }
+
+  get offsetWidth(): number {
+    return this.el.offsetWidth;
   }
 }
 

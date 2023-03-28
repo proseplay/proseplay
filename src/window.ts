@@ -85,7 +85,7 @@ class Window {
     this.currentIndex = this.choices.indexOf(choice);
     this.choices.forEach(otherChoice => otherChoice.deactivate());
     choice.activate();
-    this.el.style.width = `${choice.el.offsetWidth}px`;
+    this.el.style.width = `${choice.offsetWidth}px`;
   }
 
   random(choiceIndex?: number): number {
