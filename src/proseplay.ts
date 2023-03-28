@@ -34,6 +34,8 @@ as (seep|sleep)`,
 (in love|till death)[1-]`
 };
 
+let EM: number;
+
 class ProsePlay {
   private el: HTMLElement;
 
@@ -55,6 +57,8 @@ class ProsePlay {
     this.el = el;
     this.el.classList.add("proseplay");
     window.addEventListener("resize", this.handleResize);
+
+    EM = parseInt(getComputedStyle(el).fontSize);
   }
 
   private static createInstance(): ProsePlay {
@@ -249,9 +253,16 @@ class ProsePlay {
         window.listEl.style.top = "0px";
 
         let maxWidth = 0;
-        window.choices.forEach(choice => {
+        window.choices.forEach((choice, i) => {
           choice.el.style.opacity = "1";
-          maxWidth = Math.max(maxWidth, choice.el.offsetWidth);
+          if (!window.horizontal) {
+            maxWidth = Math.max(maxWidth, choice.el.offsetWidth);
+          } else {
+            if (i > 0) {
+              maxWidth += EM;
+            }
+            maxWidth += choice.el.offsetWidth;
+          }
         });
         window.el.style.width = `${maxWidth}px`;
 
