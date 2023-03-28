@@ -57,6 +57,7 @@ class ProsePlay {
     this.el = el;
     this.el.classList.add("proseplay");
     window.addEventListener("resize", this.handleResize);
+    document.addEventListener("DOMContentLoaded", this.handleResize);
 
     EM = parseInt(getComputedStyle(el).fontSize);
   }
