@@ -205,13 +205,14 @@ class Window {
     const target = e.target as HTMLElement;
     if (!target.classList.contains("proseplay-current")) return;
 
+    (this.el.closest(".proseplay") as HTMLElement).querySelectorAll(".proseplay-line").forEach(line => {
+      line.classList.add("proseplay-has-hover");
+    });
     this.pointerOver();
-    this.links.forEach(window => window.pointerOver());
   }
-  
+
   pointerOver() {
     this.el.classList.add("proseplay-hover");
-    (this.el.parentElement as HTMLElement).classList.add("proseplay-has-hover");
   }
 
   private handlePointerDown = (e: PointerEvent): void => {
@@ -251,6 +252,9 @@ class Window {
 
   private handlePointerOut = (): void => {
     if (this.isDragged) return;
+    (this.el.closest(".proseplay") as HTMLElement).querySelectorAll(".proseplay-line").forEach(line => {
+      line.classList.remove("proseplay-has-hover");
+    });
     this.pointerOut();
     this.links.forEach(window => window.pointerOut());
   }
@@ -258,7 +262,6 @@ class Window {
   pointerOut() {
     this.isDragged = false;
     this.el.classList.remove("proseplay-hover");
-    (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
   }
 
   private handlePointerUp = (e: PointerEvent): void => {
@@ -280,7 +283,9 @@ class Window {
       }
     }
 
-    (this.el.parentElement as HTMLElement).classList.remove("proseplay-has-hover");
+    (this.el.closest(".proseplay") as HTMLElement).querySelectorAll(".proseplay-line").forEach(line => {
+      line.classList.remove("proseplay-has-hover");
+    })
   }
 
   /**
