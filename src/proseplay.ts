@@ -53,6 +53,10 @@ class ProsePlay {
     [name: string]: Function
   } = {};
 
+  /**
+   * Create a new ProsePlay object, which will be contained in the given HTML element.
+   * @param el The HTML element in which the ProsePlay instance will be contained.
+   */
   constructor(el: HTMLElement) {
     this.el = el;
     this.el.classList.add("proseplay");
@@ -236,14 +240,23 @@ class ProsePlay {
   }
 
   /**
-   * Slide each window to a random choice. If windows are linked, they will move to the same choice index together.
+   * Slide each window to a random choice. If windows are linked, they will move to the same choice index together. If no `windowIndexes` is specified, all windows will be randomised.
+   * @param windowIndexes An optional list of window indexes to randomise.
    */
-  generate(): void {
+  randomise(windowIndexes?: number[]): void {
     if (this._isExpanded) return;
 
+    if (!windowIndexes) {
+      windowIndexes = this.windows.map((_, i) => i);
+    }
+    
     let windowsDragged: Window[] = [];
-    this.windows.forEach(window => {
+    windowIndexes.forEach(i => {
+      const window = this.windows[i];
+      if (!window) return;
+
       if (windowsDragged.includes(window)) return;
+
       let choiceIndex = window.random();
       windowsDragged.push(window);
       if (window.linkIndex) {
@@ -254,6 +267,14 @@ class ProsePlay {
         });
       }
     });
+  }
+
+  /**
+   * Alias for `randomise()`.
+   * @param windowIndexes An optional list of window indexes to randomise.
+   */
+  randomize(windowIndexes?: number[]): void {
+    this.randomise(windowIndexes);
   }
 
   /**
@@ -331,7 +352,7 @@ class ProsePlay {
    * Check if windows are expanded or collapsed.
    * @returns A boolean representing whether windows are expanded (true) or collapsed (false).
    */
-  isExpanded(): boolean {
+  get isExpanded(): boolean {
     return this._isExpanded;
   }
 
