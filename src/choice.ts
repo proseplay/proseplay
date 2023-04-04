@@ -13,7 +13,7 @@ class Choice {
     if (text !== " ") {
       this.el.innerText = text;
     } else {
-      this.el.innerHTML = "&hairsp;";
+      this.el.innerHTML = "&thinsp;";
     }
   }
 
