@@ -18,7 +18,7 @@ In your project, import the library:
 import { ProsePlay } from "proseplay";
 ```
 
-[Full docs](https://www.proseplay.net/docs/) on how to use the tool!
+[Full docs](https://www.proseplay.net/reference/) on how to use the tool!
 
 ## Development
 
