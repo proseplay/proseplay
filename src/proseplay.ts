@@ -241,14 +241,11 @@ class ProsePlay {
 
   /**
    * Slide each window to a random choice. If windows are linked, they will move to the same choice index together. If no `windowIndexes` is specified, all windows will be randomised.
-   * @param windowIndexes An optional list of window indexes to randomise.
    */
-  randomise(windowIndexes?: number[]): void {
+  randomise(options?: { windowIndexes?: number[], millis?: number }): void {
     if (this._isExpanded) return;
 
-    if (!windowIndexes) {
-      windowIndexes = this.windows.map((_, i) => i);
-    }
+    const windowIndexes = options?.windowIndexes || this.windows.map((_, i) => i);
     
     let windowsDragged: Window[] = [];
     windowIndexes.forEach(i => {
@@ -258,11 +255,12 @@ class ProsePlay {
       if (windowsDragged.includes(window)) return;
 
       let choiceIndex = window.random();
+      window.slideToChoice(choiceIndex, options?.millis);
       windowsDragged.push(window);
       if (window.linkIndex) {
         this.links[window.linkIndex].forEach(otherWindow => {
           if (windowsDragged.includes(otherWindow)) return;
-          otherWindow.random(choiceIndex);
+          otherWindow.slideToChoice(choiceIndex, options?.millis);
           windowsDragged.push(otherWindow);
         });
       }
@@ -273,8 +271,8 @@ class ProsePlay {
    * Alias for `randomise()`.
    * @param windowIndexes An optional list of window indexes to randomise.
    */
-  randomize(windowIndexes?: number[]): void {
-    this.randomise(windowIndexes);
+  randomize(options?: { windowIndexes?: number[], millis?: number }): void {
+    this.randomise(options);
   }
 
   /**

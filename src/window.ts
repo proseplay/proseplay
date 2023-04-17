@@ -97,38 +97,11 @@ class Window {
   }
 
   /**
-   * Slide to a random choice.
-   * @param choiceIndex Optional parameter, if a specific choice index is needed.
-   * @returns The chosen index of choices.
+   * Get a random choice index.
+   * @returns The random chocie index.
    */
-  random(choiceIndex?: number): number {
-    if (choiceIndex === undefined) {
-      choiceIndex = Math.floor(Math.random() * this.choices.length);
-    }
-    if (choiceIndex > this.choices.length - 1) {
-      choiceIndex = this.choices.length - 1;
-    }
-    const choice = this.choices[choiceIndex];
-    this.activateChoice(choice);
-
-    this.pointerDown();
-
-    this.listEl.classList.add("proseplay-has-transition");
-    this.listEl.addEventListener("transitionend", () => {
-      this.listEl.classList.remove("proseplay-has-transition");
-    });
-
-    setTimeout(() => {
-      if (!this.horizontal) {
-        this.listEl.style.top = `-${choice.offsetTop}px`;
-      } else {
-        this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
-      }
-    }, BUFFER_TIME);
-
-    this.pointerUp();
-
-    return choiceIndex;
+  random(): number {
+    return Math.floor(Math.random() * this.choices.length);
   }
 
   private slideToPos(pos: number): void {
