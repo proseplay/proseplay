@@ -9,7 +9,7 @@ windowTemplate.append(listTemplate);
 const linkRefTemplate = document.createElement("sup");
 linkRefTemplate.classList.add("proseplay-link-ref");
 
-const BUFFER_TIME = 500;
+const BUFFER_TIME = 15;
 let PADDING: number;
 
 const mouse = { x: 0, y: 0 };
@@ -112,15 +112,20 @@ class Window {
     this.activateChoice(choice);
 
     this.pointerDown();
+
     this.listEl.classList.add("proseplay-has-transition");
-    setTimeout(() => this.listEl.classList.remove("proseplay-has-transition"), BUFFER_TIME);
+    this.listEl.addEventListener("transitionend", () => {
+      this.listEl.classList.remove("proseplay-has-transition");
+    });
+
     setTimeout(() => {
       if (!this.horizontal) {
         this.listEl.style.top = `-${choice.offsetTop}px`;
       } else {
         this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
       }
-    }, 15);
+    }, BUFFER_TIME);
+
     this.pointerUp();
 
     return choiceIndex;
@@ -143,14 +148,37 @@ class Window {
    * Slide to a specified index in the window's array of choices.
    * @param choiceIndex Index of choice to slide to.
    */
-  slideToChoice(choiceIndex: number) {
+  slideToChoice(choiceIndex: number, duration?: number) {
     if (choiceIndex > this.choices.length - 1) return;
     const choice = this.choices[choiceIndex];
 
     this.pointerOver();
     this.pointerDown();
+
     this.listEl.classList.add("proseplay-has-transition");
-    setTimeout(() => this.listEl.classList.remove("proseplay-has-transition"), BUFFER_TIME);
+    this.listEl.addEventListener("transitionend", e => {
+      if (e.target !== this.listEl) return;
+      this.listEl.classList.remove("proseplay-has-transition");
+    });
+
+    if (duration) {
+      this.listEl.style.transitionDuration = `${duration}ms`;
+      this.listEl.addEventListener("transitionend", () => {
+        this.listEl.style.removeProperty("transition-duration");
+      });
+
+      this.choices.forEach(choice => {
+        choice.el.style.transitionDuration = `${duration}ms`;
+        choice.el.addEventListener("transitionend", () => {
+          choice.el.style.removeProperty("transition-duration");
+        });
+      });
+
+      this.el.style.transitionDuration = `${duration}ms`;
+      this.el.addEventListener("transitionend", () => {
+        this.el.style.removeProperty("transition-duration");
+      });
+    }
 
     setTimeout(() => {
       if (!this.horizontal) {
@@ -158,7 +186,7 @@ class Window {
       } else {
         this.listEl.style.left = `${-Math.abs(choice.offsetLeft) + PADDING}px`;
       }
-    }, 15);
+    }, BUFFER_TIME);
 
     this.pointerUp();
     this.pointerOut();

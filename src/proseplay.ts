@@ -411,11 +411,11 @@ class ProsePlay {
    * @param windowIndex The index of the window to slide.
    * @param choiceIndex The index of the choice to slide to.
    */
-  slideWindow(windowIndex: number, choiceIndex: number): void {
+  slideWindow(windowIndex: number, choiceIndex: number, options?: { millis?: number }): void {
     if (windowIndex > this.windows.length - 1) return;
     const window = this.windows[windowIndex];
     if (choiceIndex > window.choices.length - 1) return;
-    window.slideToChoice(choiceIndex);
+    window.slideToChoice(choiceIndex, options?.millis);
   }
 }
 
