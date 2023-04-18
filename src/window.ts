@@ -2,6 +2,7 @@ import { Choice } from "./choice";
 
 const windowTemplate = document.createElement("div");
 windowTemplate.classList.add("proseplay-window");
+windowTemplate.setAttribute("tabindex", "0");
 const listTemplate = document.createElement("div");
 listTemplate.classList.add("proseplay-list");
 windowTemplate.append(listTemplate);
@@ -37,6 +38,7 @@ class Window {
   constructor(parent: HTMLElement) {
     this.el = windowTemplate.cloneNode(true) as HTMLElement;
     parent.appendChild(this.el);
+    this.el.addEventListener("keydown", this.handleKeydown);
 
     this.el.addEventListener("pointerover", this.handlePointerOver);
     this.el.addEventListener("pointerdown", this.handlePointerDown);
@@ -58,6 +60,18 @@ class Window {
     this.functions = {};
 
     PADDING = parseInt(getComputedStyle(parent).fontSize) * 0.3;
+  }
+
+  handleKeydown = (e: KeyboardEvent): void => {
+    if (e.key === "ArrowDown") {
+      const index = Math.min(this.currentIndex + 1, this.choices.length - 1)
+      this.slideToChoice(index);
+      this.links.forEach(window => window.slideToChoice(index));
+    } else if (e.key === "ArrowUp") {
+      const index = Math.max(this.currentIndex - 1, 0);
+      this.slideToChoice(index);
+      this.links.forEach(window => window.slideToChoice(index));
+    }
   }
 
   /**
