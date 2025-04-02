@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/proseplay/proseplay"
+    "url": "git+https://github.com/proseplay/proseplay.git"
   },
   "license": "MIT",
   "bugs": {
