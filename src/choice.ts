@@ -1,5 +1,5 @@
 const choiceTemplate = document.createElement("div");
-choiceTemplate.classList.add("proseplay-choice");
+choiceTemplate.classList.add("proseplay__choice");
 
 class Choice {
   el: HTMLElement;
@@ -22,7 +22,7 @@ class Choice {
    */
   activate() {
     this.isCurrent = true;
-    this.el.classList.add("proseplay-current");
+    this.el.classList.add("proseplay__current");
   }
   
   /**
@@ -30,7 +30,7 @@ class Choice {
    */
   deactivate() {
     this.isCurrent = false;
-    this.el.classList.remove("proseplay-current");
+    this.el.classList.remove("proseplay__current");
   }
 
   /**
