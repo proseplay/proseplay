@@ -13,7 +13,7 @@ type TokenizedLine = Token[];
 type TokenizedText = TokenizedLine[];
 
 const lineTemplate = document.createElement("div");
-lineTemplate.classList.add("proseplay-line");
+lineTemplate.classList.add("proseplay__line");
 
 const samples = {
   dickinson: `We talked with each other about each other
@@ -198,7 +198,7 @@ class ProsePlay {
       line.forEach(token => {
         if (token.strings.length === 1) {
           const span = document.createElement("span");
-          span.classList.add("proseplay-plaintext");
+          span.classList.add("proseplay__plaintext");
           span.innerText = token.strings[0];
           lineEl.append(span);
           this.lines[this.lines.length - 1].tokens.push(token.strings[0]);
@@ -280,7 +280,7 @@ class ProsePlay {
    */
   expand(): void {
     this._isExpanded = true;
-    this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
+    this.el.classList.toggle("proseplay__is-expanded", this._isExpanded);
 
     const em = parseFloat(getComputedStyle(this.el).fontSize);
     
@@ -324,7 +324,7 @@ class ProsePlay {
    */
   collapse(): void {
     this._isExpanded = false;
-    this.el.classList.toggle("proseplay-is-expanded", this._isExpanded);
+    this.el.classList.toggle("proseplay__is-expanded", this._isExpanded);
 
     this.lines.forEach(line => {
       line.el.style.removeProperty("margin-bottom");
