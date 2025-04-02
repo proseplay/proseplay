@@ -1,11 +1,9 @@
 .proseplay {
   line-height: 1.5;
+}
 
-  &.proseplay__is-expanded {
-    .proseplay__current {
-      cursor: default;
-    }
-  }
+.proseplay__is-expanded .proseplay__current {
+  cursor: default;
 }
 
 .proseplay__plaintext {
@@ -26,16 +24,15 @@
   touch-action: none;
   user-select: none;
   pointer-events: none;
+}
 
-  &.proseplay__horizontal {
-    .proseplay__list {
-      flex-direction: row;
-      gap: 1em;
-    }
-    .proseplay__current {
-      cursor: ew-resize;
-    }
-  }
+.proseplay__window.proseplay__horizontal .proseplay__list {
+  flex-direction: row;
+  gap: 1em;
+}
+
+.proseplay__window.proseplay__horizontal .proseplay__current {
+  cursor: ew-resize;
 }
 
 .proseplay__link-ref {
@@ -49,10 +46,10 @@
   display: flex;
   flex-direction: column;
   touch-action: none;
-  
-  &.proseplay__has-transition {
-    transition: top 150ms ease-in-out, left 150ms ease-in-out;
-  }
+}
+
+.proseplay__list.proseplay__has-transition {
+  transition: top 150ms ease-in-out, left 150ms ease-in-out;
 }
 
 .proseplay__choice {
@@ -72,24 +69,18 @@
   pointer-events: all;
 }
 
-.proseplay__has-hover {
-  .proseplay__plaintext,
-  .proseplay__link-ref {
-    opacity: 0.2;
-  }
-  .proseplay__window {
-    .proseplay__choice {
-      &.proseplay__current {
-        opacity: 0.2;
-      }
-    }
-    &.proseplay__hover {
-      .proseplay__choice {
-        opacity: 0.4;
-        &.proseplay__current {
-          opacity: 1;
-        }
-      }
-    }
-  }
+.proseplay__has-hover :is(.proseplay__plaintext, .proseplay__link-ref) {
+  opacity: 0.2;
+}
+
+.proseplay__has-hover .proseplay__window .proseplay__current {
+  opacity: 0.2;
+}
+
+.proseplay__has-hover .proseplay__hover .proseplay__choice {
+  opacity: 0.4;
+}
+
+.proseplay__has-hover .proseplay__hover .proseplay__choice.proseplay__current {
+  opacity: 1;
 }
