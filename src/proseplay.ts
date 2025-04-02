@@ -1,4 +1,4 @@
-import "./proseplay.less";
+import "./proseplay.css";
 
 import { Window } from "./window";
 import { Choice } from "./choice";
